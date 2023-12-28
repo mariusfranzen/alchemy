@@ -1,0 +1,34 @@
+{
+    "elements": [
+        {
+            "name": "Air",
+            "description": "Why did the oxygen molecule break up with the hydrogen molecule? It needed some space!",
+            "discovered": true
+        },
+        {
+            "name": "Fire",
+            "description": "Don't touch me.",
+            "discovered": true
+        },
+        {
+            "name": "Water",
+            "description": "Slippery when wet.",
+            "discovered": true
+        },
+        {
+            "name": "Earth",
+            "description": "The element, not the planet.",
+            "discovered": true
+        },
+        {
+            "name": "Dust",
+            "description": "The glitter of adulting - You can never really get rid of it.",
+            "discovered": false
+        },
+        {
+            "name": "Steam",
+            "description": "The rebelious phase of water",
+            "discovered": false
+        }
+    ]
+}

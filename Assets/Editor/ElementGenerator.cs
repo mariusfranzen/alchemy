@@ -149,6 +149,7 @@ public class ElementGenerator : EditorWindow
             go.GetComponent<SpriteRenderer>().sortingOrder = 1;
             go.GetComponent<ElementScript>().Name = element.name;
             go.GetComponent<ElementScript>().Discovered = element.discovered;
+            go.AddComponent<BoxCollider2D>();
             Instantiate(goCircle, go.transform);
             CreatePrefab(go);
             DestroyImmediate(go);

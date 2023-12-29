@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -27,8 +28,13 @@ public class ElementGenerator : EditorWindow
         {
             text = "Select file"
         };
-        var selectedFile = "";
-        var fileLabel = new Label("File: C:/");
+        var selectedFile = GetLastPath();
+        var fileLabel = new Label($"File: {selectedFile}");
+
+        if (selectedFile != string.Empty)
+        {
+            fileSelected = true;
+        }
 
         selectFile.clicked += () =>
         {
@@ -38,6 +44,7 @@ public class ElementGenerator : EditorWindow
                 selectedFile = path;
                 fileLabel.text = "File: " + path;
                 fileSelected = true;
+                SaveLastPath(path);
             } 
             else
             {
@@ -51,14 +58,8 @@ public class ElementGenerator : EditorWindow
         {
             if (!fileSelected)
             {
-                //TODO
-                Debug.LogError("File is not selected");
+                EditorUtility.DisplayDialog("No file selected", "You need to select a file", "Ok");
                 return;
-            }
-            if (true)
-            {
-                //TODO: Check if element already exists
-                Debug.LogWarning("Check if element already exists - NotImplemented");
             }
             if (true)
             {
@@ -66,32 +67,37 @@ public class ElementGenerator : EditorWindow
                 Debug.LogWarning("Make sure sprite exists - NotImplemented");
             }
             var json = File.ReadAllText(selectedFile);
-            GetElementsFromJson(json);
+            CreatePrefabsFromJson(json);
         };
 
         fileSelectContainer.Add(fileLabel);
         fileSelectContainer.Add(selectFile);
 
-        var nameInput = new TextField();
-        nameInput.label = "Name: ";
-        var descriptionInput = new TextField();
-        descriptionInput.label = "Description: ";
-        var addElementButton = new Button();
-        addElementButton.text = "Add element";
+        var nameInput = new TextField
+        {
+            label = "Name: "
+        };
+        var descriptionInput = new TextField
+        {
+            label = "Description: "
+        };
+        var addElementButton = new Button
+        {
+            text = "Add element"
+        };
         // TODO: Add file dialog for selecting sprite
 
         addElementButton.clicked += () =>
         {
             if (!fileSelected)
             {
-                //TODO
-                Debug.LogError("File is not selected");
+                EditorUtility.DisplayDialog("No file selected", "You need to select a file", "Ok");
                 return;
             }
-            if (true)
+            if (ElementExists(nameInput.text, selectedFile))
             {
-                //TODO: Check if element already exists
-                Debug.LogWarning("Check if element already exists - NotImplemented");
+                EditorUtility.DisplayDialog("Element exists", "An element with that name already exists", "Ok");
+                return;
             }
             AddElementToJson(selectedFile, nameInput.text, descriptionInput.text);
         };
@@ -106,13 +112,9 @@ public class ElementGenerator : EditorWindow
         rootVisualElement.Add(generateFromJsonButton);
     }
 
-    public void AddElementToJson(string filePath, string name, string description)
+    private void AddElementToJson(string filePath, string name, string description)
     {
         var json = File.ReadAllText(filePath);
-        Debug.Log(json);
-        Debug.Log(name);
-        Debug.Log(description);
-
         var elementModel = JsonUtility.FromJson<ElementModel>(json);
         var elementList = new List<InnerElementModel>(elementModel.elements);
         var newElement = new InnerElementModel
@@ -129,7 +131,7 @@ public class ElementGenerator : EditorWindow
         File.WriteAllText(filePath, newJson);
     }
 
-    public List<GameObject> GetElementsFromJson(string json)
+    private List<GameObject> CreatePrefabsFromJson(string json)
     {
         var elementModel = JsonUtility.FromJson<ElementModel>(json);
         foreach (var element in elementModel.elements)
@@ -150,12 +152,15 @@ public class ElementGenerator : EditorWindow
         return new List<GameObject>();
     }
 
-    public GameObject GetCirclePrefab()
+    private GameObject GetCirclePrefab()
     {
-        return Resources.Load<GameObject>("Prefabs/SelectionCircle");
+        var circle = Resources.Load<GameObject>("Prefabs/SelectionCircle");
+        circle.transform.localScale = Vector3.zero;
+
+        return circle;
     }
 
-    public GameObject GetBaseGameObject()
+    private GameObject GetBaseGameObject()
     {
         var baseGameObject = new GameObject();
         baseGameObject.AddComponent<SpriteRenderer>();
@@ -164,13 +169,49 @@ public class ElementGenerator : EditorWindow
         return baseGameObject;
     }
 
-    public Sprite GetElementSprite(string name)
+    private Sprite GetElementSprite(string name)
     {
         return Resources.Load<Sprite>($"Icons/{name.ToLower()}");
     }
 
-    public void CreatePrefab(GameObject go)
+    private void CreatePrefab(GameObject go)
     {
         PrefabUtility.SaveAsPrefabAsset(go, $"Assets/Prefabs/Generated/{go.name}.prefab");
+    }
+
+    private string GetLastPath()
+    {
+        return Utils.GetEditorSettings().ElementGeneratorSettings.LastPath ?? "";
+    }
+
+    private void SaveLastPath(string path)
+    {
+        var settings = Utils.GetEditorSettings();
+        settings.ElementGeneratorSettings.LastPath = path;
+        Utils.SaveEditorSettings(settings);
+    }
+
+    private bool ElementExists(string name, string path)
+    {
+        var elements = GetElementList(path);
+        foreach (var element in elements)
+        {
+            if (element.name.ToLower() == name.ToLower())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private List<InnerElementModel> GetElementList(string path)
+    {
+        return GetElementModel(path).elements.ToList();
+    }
+
+    private ElementModel GetElementModel(string path)
+    {
+        var json = File.ReadAllText(path);
+        return JsonUtility.FromJson<ElementModel>(json);
     }
 }

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using Ionic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -25,7 +24,12 @@ public class CombinationGenerator : EditorWindow
             text = "Select file"
         };
         var selectedFile = "";
-        var fileLabel = new Label("File: C:/");
+        var fileLabel = new Label($"File: {selectedFile}");
+
+        if (selectedFile != string.Empty)
+        {
+            fileSelected = true;
+        }
 
         selectFile.clicked += () =>
         {
@@ -35,6 +39,7 @@ public class CombinationGenerator : EditorWindow
                 selectedFile = path;
                 fileLabel.text = "File: " + path;
                 fileSelected = true;
+                SaveLastPath(path);
             }
             else
             {
@@ -47,21 +52,28 @@ public class CombinationGenerator : EditorWindow
         fileSelectContainer.Add(fileLabel);
         fileSelectContainer.Add(selectFile);
 
-        var element1 = new TextField();
-        element1.label = "Element 1: ";
-        var element2 = new TextField();
-        element2.label = "Element 2: ";
-        var resultElement = new TextField();
-        resultElement.label = "Result element: ";
-        var addCombination = new Button();
-        addCombination.text = "Add combination";
+        var element1 = new TextField
+        {
+            label = "Element 1: "
+        };
+        var element2 = new TextField
+        {
+            label = "Element 2: "
+        };
+        var resultElement = new TextField
+        {
+            label = "Result element: "
+        };
+        var addCombination = new Button
+        {
+            text = "Add combination"
+        };
 
         addCombination.clicked += () =>
         {
             if (!fileSelected)
             {
-                //TODO
-                Debug.LogError("File is not selected");
+                EditorUtility.DisplayDialog("No file selected", "You need to select a file", "Ok");
                 return;
             }
             if (true)
@@ -96,5 +108,17 @@ public class CombinationGenerator : EditorWindow
         rootVisualElement.Add(element2);
         rootVisualElement.Add(resultElement);
         rootVisualElement.Add(addCombination);
+    }
+
+    public string GetLastPath()
+    {
+        return Utils.GetEditorSettings().CombinationGeneratorSettings.LastPath ?? "";
+    }
+
+    public void SaveLastPath(string path)
+    {
+        var settings = Utils.GetEditorSettings();
+        settings.CombinationGeneratorSettings.LastPath = path;
+        Utils.SaveEditorSettings(settings);
     }
 }

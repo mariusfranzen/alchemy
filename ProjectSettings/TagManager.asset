@@ -41,3 +41,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: UI
+    uniqueID: 2687593921
+    locked: 0
+  - name: Elements
+    uniqueID: 3691954875
+    locked: 0
+  - name: Popover
+    uniqueID: 2252837749
+    locked: 0

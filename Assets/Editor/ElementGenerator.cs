@@ -3,6 +3,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static ElementModel;
 
 public class ElementGenerator : EditorWindow
 {
@@ -29,7 +30,6 @@ public class ElementGenerator : EditorWindow
         };
         var selectedFile = "";
         var fileLabel = new Label("File: C:/");
-        var elementList = new List<GameObject>();
 
         selectFile.clicked += () =>
         {
@@ -50,11 +50,24 @@ public class ElementGenerator : EditorWindow
 
         generateFromJsonButton.clicked += () =>
         {
-            if (fileSelected)
+            if (!fileSelected)
             {
-                var json = File.ReadAllText(selectedFile);
-                elementList.AddRange(GetElementsFromJson(json));
+                //TODO
+                Debug.LogError("File is not selected");
+                return;
             }
+            if (true)
+            {
+                //TODO: Check if element already exists
+                Debug.LogWarning("Check if element already exists - NotImplemented");
+            }
+            if (true)
+            {
+                //TODO: Make sure sprite exists
+                Debug.LogWarning("Make sure sprite exists - NotImplemented");
+            }
+            var json = File.ReadAllText(selectedFile);
+            GetElementsFromJson(json);
         };
 
         fileSelectContainer.Add(fileLabel);
@@ -66,14 +79,22 @@ public class ElementGenerator : EditorWindow
         descriptionInput.label = "Description: ";
         var addElementButton = new Button();
         addElementButton.text = "Add element";
+        // TODO: Add file dialog for selecting sprite
 
         addElementButton.clicked += () =>
         {
-            if (fileSelected)
+            if (!fileSelected)
             {
-                var json = File.ReadAllText(selectedFile);
-                AddElementToJson(json, nameInput.text, descriptionInput.text);
+                //TODO
+                Debug.LogError("File is not selected");
+                return;
             }
+            if (true)
+            {
+                //TODO: Check if element already exists
+                Debug.LogWarning("Check if element already exists - NotImplemented");
+            }
+            AddElementToJson(selectedFile, nameInput.text, descriptionInput.text);
         };
 
         rootVisualElement.Add(new Label("This tool is used for adding elements, or generating element prefabs from the element.json file"));
@@ -86,11 +107,27 @@ public class ElementGenerator : EditorWindow
         rootVisualElement.Add(generateFromJsonButton);
     }
 
-    public void AddElementToJson(string json, string name, string description)
+    public void AddElementToJson(string filePath, string name, string description)
     {
+        var json = File.ReadAllText(filePath);
         Debug.Log(json);
         Debug.Log(name);
         Debug.Log(description);
+
+        var elementModel = JsonUtility.FromJson<ElementModel>(json);
+        var elementList = new List<InnerElementModel>(elementModel.elements);
+        var newElement = new InnerElementModel
+        {
+            name = name,
+            description = description,
+            discovered = false
+        };
+
+        elementList.Add(newElement);
+        elementModel.elements = elementList.ToArray();
+
+        var newJson = JsonUtility.ToJson(elementModel);
+        File.WriteAllText(filePath, newJson);
     }
 
     public List<GameObject> GetElementsFromJson(string json)
@@ -101,8 +138,11 @@ public class ElementGenerator : EditorWindow
             var go = GetBaseGameObject();
             go.name = element.name;
             go.GetComponent<SpriteRenderer>().sprite = GetElementSprite(element.name);
+            go.GetComponent<SpriteRenderer>().sortingLayerName = "Elements";
+            go.GetComponent<SpriteRenderer>().sortingOrder = 1;
             go.GetComponent<ElementScript>().Name = element.name;
             go.GetComponent<ElementScript>().Discovered = element.discovered;
+            
             CreatePrefab(go);
             DestroyImmediate(go);
         }
@@ -126,6 +166,6 @@ public class ElementGenerator : EditorWindow
 
     public void CreatePrefab(GameObject go)
     {
-        var prefab = PrefabUtility.SaveAsPrefabAsset(go, $"Assets/Prefabs/Generated/{go.name}.prefab");
+        PrefabUtility.SaveAsPrefabAsset(go, $"Assets/Prefabs/Generated/{go.name}.prefab");
     }
 }

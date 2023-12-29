@@ -29,6 +29,11 @@
             "name": "Steam",
             "description": "The rebelious phase of water",
             "discovered": false
+        },
+        {
+            "name": "Gunpowder",
+            "description": "A powder that explodes when excited.",
+            "discovered": false
         }
     ]
 }

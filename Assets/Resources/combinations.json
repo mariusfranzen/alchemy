@@ -1,12 +1,14 @@
-[
-    {
-        "element1": "Air",
-        "element2": "Earth",
-        "result": "Dust"
-    },
-    {
-        "element1": "Water",
-        "element2": "Fire",
-        "result": "Steam"
-    }
-]
+{
+    "combinations": [
+        {
+            "element1": "Air",
+            "element2": "Earth",
+            "result": "Dust"
+        },
+        {
+            "element1": "Water",
+            "element2": "Fire",
+            "result": "Steam"
+        }
+    ]
+}

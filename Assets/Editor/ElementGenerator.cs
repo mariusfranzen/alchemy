@@ -7,7 +7,6 @@ using static ElementModel;
 
 public class ElementGenerator : EditorWindow
 {
-
     [MenuItem("Tools/Element Generator")]
     public static void ShowElementGenerator()
     {
@@ -136,18 +135,24 @@ public class ElementGenerator : EditorWindow
         foreach (var element in elementModel.elements)
         {
             var go = GetBaseGameObject();
+            var goCircle = GetCirclePrefab();
             go.name = element.name;
             go.GetComponent<SpriteRenderer>().sprite = GetElementSprite(element.name);
             go.GetComponent<SpriteRenderer>().sortingLayerName = "Elements";
             go.GetComponent<SpriteRenderer>().sortingOrder = 1;
             go.GetComponent<ElementScript>().Name = element.name;
             go.GetComponent<ElementScript>().Discovered = element.discovered;
-            
+            Instantiate(goCircle, go.transform);
             CreatePrefab(go);
             DestroyImmediate(go);
         }
 
         return new List<GameObject>();
+    }
+
+    public GameObject GetCirclePrefab()
+    {
+        return Resources.Load<GameObject>("Prefabs/SelectionCircle");
     }
 
     public GameObject GetBaseGameObject()

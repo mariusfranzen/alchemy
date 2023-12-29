@@ -21,5 +21,6 @@ public class ElementGeneratorSettings
 [Serializable]
 public class CombinationGeneratorSettings
 {
-    public string LastPath;
+    public string LastCombinationsPath;
+    public string LastElementsPath;
 }

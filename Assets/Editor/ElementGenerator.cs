@@ -134,8 +134,13 @@ public class ElementGenerator : EditorWindow
     private List<GameObject> CreatePrefabsFromJson(string json)
     {
         var elementModel = JsonUtility.FromJson<ElementModel>(json);
+        var prefabCount = elementModel.elements.Length;
+        var currentPrefab = 0;
+        float prefabPercentage = 1f / prefabCount;
         foreach (var element in elementModel.elements)
         {
+            EditorUtility.DisplayProgressBar("Generating prefabs", $"Prefab {currentPrefab}/{prefabCount}", prefabPercentage * currentPrefab);
+
             var go = GetBaseGameObject();
             var goCircle = GetCirclePrefab();
             go.name = element.name;
@@ -147,7 +152,9 @@ public class ElementGenerator : EditorWindow
             Instantiate(goCircle, go.transform);
             CreatePrefab(go);
             DestroyImmediate(go);
+            currentPrefab++;
         }
+        EditorUtility.ClearProgressBar();
 
         return new List<GameObject>();
     }

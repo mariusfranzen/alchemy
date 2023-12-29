@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static CombinationModel;
+using static ElementModel;
 
 public class CombinationGenerator : EditorWindow
 {
@@ -16,41 +18,82 @@ public class CombinationGenerator : EditorWindow
 
     public void CreateGUI()
     {
-        bool fileSelected = false;
+        bool combinationFileSelected = false;
+        bool elementsFileSelected = false;
 
-        var fileSelectContainer = new VisualElement();
-        var selectFile = new Button
+        // Combinations select
+
+        var combinationsSelectContainer = new VisualElement();
+        var selectCombinationFile = new Button
         {
-            text = "Select file"
+            text = "Select combinations file"
         };
-        var selectedFile = "";
-        var fileLabel = new Label($"File: {selectedFile}");
+        var selectedCombinationsFile = GetLastCombinationsPath();
+        var combinationsFileLabel = new Label($"Combinations file: {selectedCombinationsFile}");
 
-        if (selectedFile != string.Empty)
+        if (selectedCombinationsFile != string.Empty)
         {
-            fileSelected = true;
+            combinationFileSelected = true;
         }
 
-        selectFile.clicked += () =>
+        selectCombinationFile.clicked += () =>
         {
             var path = EditorUtility.OpenFilePanel("Select JSON file with combinations", "", "json");
             if (path.Length != 0)
             {
-                selectedFile = path;
-                fileLabel.text = "File: " + path;
-                fileSelected = true;
-                SaveLastPath(path);
+                selectedCombinationsFile = path;
+                combinationsFileLabel.text = "Combinations file: " + path;
+                combinationFileSelected = true;
+                SaveLastCombinationsPath(path);
             }
             else
             {
-                selectedFile = "";
-                fileLabel.text = "File: ";
-                fileSelected = false;
+                selectedCombinationsFile = "";
+                combinationsFileLabel.text = "Combinations file: ";
+                combinationFileSelected = false;
             }
         };
 
-        fileSelectContainer.Add(fileLabel);
-        fileSelectContainer.Add(selectFile);
+        combinationsSelectContainer.Add(combinationsFileLabel);
+        combinationsSelectContainer.Add(selectCombinationFile);
+
+        //Elements select
+
+        var elementsSelectContainer = new VisualElement();
+        var selectElementsFile = new Button
+        {
+            text = "Select elements file"
+        };
+        var selectedElementsFile = GetLastElementsPath();
+        var elementsFileLabel = new Label($"Elements file: {selectedElementsFile}");
+
+        if (selectedElementsFile != string.Empty)
+        {
+            elementsFileSelected = true;
+        }
+
+        selectElementsFile.clicked += () =>
+        {
+            var path = EditorUtility.OpenFilePanel("Select JSON file with elements", "", "json");
+            if (path.Length != 0)
+            {
+                selectedElementsFile = path;
+                elementsFileLabel.text = "Elements file: " + path;
+                elementsFileSelected = true;
+                SaveLastElementsPath(path);
+            }
+            else
+            {
+                selectedElementsFile = "";
+                elementsFileLabel.text = "Elements file: ";
+                elementsFileSelected = false;
+            }
+        };
+
+        elementsSelectContainer.Add(elementsFileLabel);
+        elementsSelectContainer.Add(selectElementsFile);
+
+        // end
 
         var element1 = new TextField
         {
@@ -71,22 +114,23 @@ public class CombinationGenerator : EditorWindow
 
         addCombination.clicked += () =>
         {
-            if (!fileSelected)
+            if (!combinationFileSelected || !elementsFileSelected)
             {
                 EditorUtility.DisplayDialog("No file selected", "You need to select a file", "Ok");
                 return;
             }
-            if (true)
+            if (!(ElementExists(element1.text, selectedElementsFile) && ElementExists(element2.text, selectedElementsFile) && ElementExists(resultElement.text, selectedElementsFile)))
             {
-                //TODO: Make sure elements actually exists
-                Debug.LogWarning("Make sure elements actually exists - NotImplemented");
+                EditorUtility.DisplayDialog("Element Missing", "One or more of the selected elements doesn't exist", "Ok");
+                return;
             }
-            if (true)
+            if (CombinationExists(selectedCombinationsFile, element1.text, element2.text, resultElement.text))
             {
-                //TODO: Check if combination already exists
-                Debug.LogWarning("Check if combination already exists - NotImplemented");
+                EditorUtility.DisplayDialog("Combination exists", "The specified combination already exists", "Ok");
+                return;
             }
-            var json = File.ReadAllText(selectedFile);
+
+            var json = File.ReadAllText(selectedCombinationsFile);
             var combinations = JsonUtility.FromJson<CombinationModel>(json);
             var combinationList = new List<InnerCombinationModel>(combinations.combinations);
             var newCombination = new InnerCombinationModel
@@ -98,11 +142,12 @@ public class CombinationGenerator : EditorWindow
 
             combinationList.Add(newCombination);
             combinations.combinations = combinationList.ToArray();
-            File.WriteAllText(selectedFile, JsonUtility.ToJson(combinations));
+            File.WriteAllText(selectedCombinationsFile, JsonUtility.ToJson(combinations));
         };
 
         rootVisualElement.Add(new Label("This tool is used for generating the element combinations"));
-        rootVisualElement.Add(fileSelectContainer);
+        rootVisualElement.Add(elementsSelectContainer);
+        rootVisualElement.Add(combinationsSelectContainer);
         rootVisualElement.Add(new Label("----------"));
         rootVisualElement.Add(element1);
         rootVisualElement.Add(element2);
@@ -110,15 +155,93 @@ public class CombinationGenerator : EditorWindow
         rootVisualElement.Add(addCombination);
     }
 
-    public string GetLastPath()
+    private string GetLastCombinationsPath()
     {
-        return Utils.GetEditorSettings().CombinationGeneratorSettings.LastPath ?? "";
+        return Utils.GetEditorSettings().CombinationGeneratorSettings.LastCombinationsPath ?? "";
     }
 
-    public void SaveLastPath(string path)
+    private string GetLastElementsPath()
+    {
+        return Utils.GetEditorSettings().CombinationGeneratorSettings.LastElementsPath ?? "";
+    }
+
+    private void SaveLastCombinationsPath(string path)
     {
         var settings = Utils.GetEditorSettings();
-        settings.CombinationGeneratorSettings.LastPath = path;
+        settings.CombinationGeneratorSettings.LastCombinationsPath = path;
         Utils.SaveEditorSettings(settings);
+    }
+
+    private void SaveLastElementsPath(string path)
+    {
+        var settings = Utils.GetEditorSettings();
+        settings.CombinationGeneratorSettings.LastElementsPath = path;
+        Utils.SaveEditorSettings(settings);
+    }
+
+    private bool ElementExists(string name, string path)
+    {
+        var elements = GetElementList(path);
+        foreach (var element in elements)
+        {
+            if (element.name.ToLower() == name.ToLower())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private bool CombinationExists(string path, string element1, string element2, string result)
+    {
+        var combinations = GetCombinationList(path);
+
+        foreach (var combination in combinations)
+        {
+            if (combination.element1.ToLower() == element1.ToLower())
+            {
+                if (combination.element2.ToLower() == element2.ToLower())
+                {
+                    if (combination.result.ToLower() == result.ToLower())
+                    {
+                        return true;
+                    }
+                }
+            }
+            else if (combination.element1.ToLower() == element2.ToLower())
+            {
+                if (combination.element2.ToLower() == element1.ToLower())
+                {
+                    if (combination.result.ToLower() == result.ToLower())
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private List<InnerElementModel> GetElementList(string path)
+    {
+        return GetElementModel(path).elements.ToList();
+    }
+
+    private ElementModel GetElementModel(string path)
+    {
+        var json = File.ReadAllText(path);
+        return JsonUtility.FromJson<ElementModel>(json);
+    }
+
+    private List<InnerCombinationModel> GetCombinationList(string path)
+    {
+        return GetCombinationModel(path).combinations.ToList();
+    }
+
+    private CombinationModel GetCombinationModel(string path)
+    {
+        var json = File.ReadAllText(path);
+        return JsonUtility.FromJson<CombinationModel>(json);
     }
 }

@@ -209,6 +209,8 @@ MonoBehaviour:
   Discovered: 0
   Animator: {fileID: 0}
   Collider: {fileID: 0}
+  GameMaster: {fileID: 0}
+  TryingToCombine: {fileID: 0}
 --- !u!50 &7977595439775349176
 Rigidbody2D:
   serializedVersion: 4

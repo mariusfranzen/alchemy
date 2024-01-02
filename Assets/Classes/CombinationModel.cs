@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 [Serializable]
 public class CombinationModel
@@ -8,8 +9,8 @@ public class CombinationModel
     [Serializable]
     public class InnerCombinationModel
     {
+        public string result;
         public string element1;
         public string element2;
-        public string result;
     }
 }

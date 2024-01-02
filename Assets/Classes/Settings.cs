@@ -9,6 +9,7 @@ public class EditorSettings
 {
     public ElementGeneratorSettings ElementGeneratorSettings;
     public CombinationGeneratorSettings CombinationGeneratorSettings;
+    public HiddenGameSettings HiddenGameSettings;
 }
 
 [Serializable]
@@ -23,4 +24,10 @@ public class CombinationGeneratorSettings
 {
     public string LastCombinationsPath;
     public string LastElementsPath;
+}
+
+[Serializable]
+public class HiddenGameSettings
+{
+    public string CombinationsPath;
 }

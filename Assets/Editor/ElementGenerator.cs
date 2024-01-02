@@ -119,8 +119,8 @@ public class ElementGenerator : EditorWindow
         var elementList = new List<InnerElementModel>(elementModel.elements);
         var newElement = new InnerElementModel
         {
-            name = name,
-            description = description,
+            name = name.FirstCharToUpper(),
+            description = description.FirstCharToUpper(),
             discovered = false
         };
 

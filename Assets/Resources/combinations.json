@@ -1,14 +1,19 @@
 {
     "combinations": [
         {
+            "result": "Dust",
             "element1": "Air",
-            "element2": "Earth",
-            "result": "Dust"
+            "element2": "Earth"
         },
         {
+            "result": "Steam",
             "element1": "Water",
-            "element2": "Fire",
-            "result": "Steam"
+            "element2": "Fire"
+        },
+        {
+            "result": "Gunpowder",
+            "element1": "Dust",
+            "element2": "Fire"
         }
     ]
 }

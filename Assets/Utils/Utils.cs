@@ -24,6 +24,12 @@ public static class Utils
         //return JsonUtility.FromJson<EditorSettings>(json);
     }
 
+    public static HiddenGameSettings GetHiddenGameSettings()
+    {
+        var json = File.ReadAllText(SettingsFilePath);
+        return JsonUtility.FromJson<EditorSettings>(json).HiddenGameSettings;
+    }
+
     public static void SaveEditorSettings(EditorSettings settings)
     {
         var json = JsonUtility.ToJson(settings);

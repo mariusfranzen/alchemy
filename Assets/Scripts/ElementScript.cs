@@ -8,7 +8,9 @@ public class ElementScript : MonoBehaviour
     public string Name;
     public bool Discovered;
     public Animator Animator;
-    public BoxCollider2D Collider;
+    public GameMasterScript GameMaster;
+    [HideInInspector]
+    public ElementScript ElementTryingToCombine = null;
 
     private Transform circle;
     private new SpriteRenderer renderer;
@@ -22,6 +24,7 @@ public class ElementScript : MonoBehaviour
         renderer = transform.GetComponent<SpriteRenderer>();
         circle = transform.Find("SelectionCircle(Clone)");
         Animator = circle.GetComponent<Animator>();
+        GameMaster = FindFirstObjectByType<GameMasterScript>();
     }
 
     void Update()
@@ -43,6 +46,10 @@ public class ElementScript : MonoBehaviour
     {
         isDragging = false;
         renderer.sortingOrder -= 1;
+        if (ElementTryingToCombine)
+        {
+            TryToCombine();
+        }
     }
 
     public void Disappear()
@@ -50,10 +57,24 @@ public class ElementScript : MonoBehaviour
         Animator.SetTrigger("DisappearTrigger");
     }
 
+    public void TryToCombine()
+    {
+        var combination = GameMaster.CombineElements(this, ElementTryingToCombine);
+        if (combination)
+        {
+            Debug.Log(combination);
+        }
+        else
+        {
+            Debug.Log("no");
+            ElementTryingToCombine.SetHover(false);
+        }
+    }
+
     /// <summary>
     /// When another element is hovering over this one
     /// </summary>
-    private void SetHover(bool hover)
+    public void SetHover(bool hover)
     {
         isHovering = hover;
         if (hover)
@@ -71,6 +92,7 @@ public class ElementScript : MonoBehaviour
     {
         if (isDragging is false)
         {
+            collision.transform.GetComponent<ElementScript>().ElementTryingToCombine = this;
             SetHover(true);
         }
     }
@@ -79,6 +101,7 @@ public class ElementScript : MonoBehaviour
     {
         if (isDragging is false)
         {
+            collision.transform.GetComponent<ElementScript>().ElementTryingToCombine = null;
             SetHover(false);
         }
     }

@@ -135,9 +135,9 @@ public class CombinationGenerator : EditorWindow
             var combinationList = new List<InnerCombinationModel>(combinations.combinations);
             var newCombination = new InnerCombinationModel
             {
-                element1 = element1.text,
-                element2 = element2.text,
-                result = resultElement.text
+                element1 = element1.text.FirstCharToUpper(),
+                element2 = element2.text.FirstCharToUpper(),
+                result = resultElement.text.FirstCharToUpper()
             };
 
             combinationList.Add(newCombination);

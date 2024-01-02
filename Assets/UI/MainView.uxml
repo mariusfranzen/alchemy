@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/MainView.uss?fileID=7433441132597879392&amp;guid=71d4c1edf8338ba47850b9d721a54e67&amp;type=3#MainView" />
+    <ui:VisualElement name="background">
+        <ui:VisualElement name="main-container">
+            <ui:ListView focusable="true" name="element-list" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

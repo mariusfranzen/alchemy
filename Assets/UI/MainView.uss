@@ -1,0 +1,20 @@
+#background {
+    flex-grow: 1;
+    align-items: flex-end;
+    justify-content: center;
+    background-color: rgb(115, 37, 38);
+    width: 350px;
+    align-self: flex-end;
+}
+
+#main-container {
+    flex-direction: column;
+    height: 350px;
+    flex-grow: 1;
+}
+
+#element-list {
+    width: 350px;
+    background-color: rgb(115, 37, 38);
+    height: initial;
+}

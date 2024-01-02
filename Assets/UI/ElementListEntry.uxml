@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/ElementListEntry.uss?fileID=7433441132597879392&amp;guid=5cc060f514c433c4d94554957936bdd3&amp;type=3#ElementListEntry" />
+    <ui:VisualElement name="list-entry">
+        <ui:VisualElement name="element-icon" />
+        <ui:Label text="Label" display-tooltip-when-elided="true" name="element-name" />
+    </ui:VisualElement>
+</ui:UXML>

@@ -103,9 +103,8 @@ MonoBehaviour:
   Name: Earth
   Discovered: 1
   Animator: {fileID: 0}
-  Collider: {fileID: 0}
   GameMaster: {fileID: 0}
-  TryingToCombine: {fileID: 0}
+  ElementTryingToCombine: {fileID: 0}
 --- !u!50 &6603534711303558744
 Rigidbody2D:
   serializedVersion: 4

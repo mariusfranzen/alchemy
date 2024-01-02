@@ -208,9 +208,8 @@ MonoBehaviour:
   Name: Fire
   Discovered: 1
   Animator: {fileID: 0}
-  Collider: {fileID: 0}
   GameMaster: {fileID: 0}
-  TryingToCombine: {fileID: 0}
+  ElementTryingToCombine: {fileID: 0}
 --- !u!50 &17196216109472539
 Rigidbody2D:
   serializedVersion: 4

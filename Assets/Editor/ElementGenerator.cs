@@ -154,6 +154,7 @@ public class ElementGenerator : EditorWindow
             bc.isTrigger = true;
             Instantiate(goCircle, go.transform);
             CreatePrefab(go);
+            CreateMenuElementEntry(element.name);
             DestroyImmediate(go);
             currentPrefab++;
         }
@@ -183,6 +184,16 @@ public class ElementGenerator : EditorWindow
     private Sprite GetElementSprite(string name)
     {
         return Resources.Load<Sprite>($"Icons/{name.ToLower()}");
+    }
+
+    private void CreateMenuElementEntry(string name)
+    {
+        var sprite = GetElementSprite(name);
+        ElementUiData data = CreateInstance<ElementUiData>();
+        data.ElementName = name;
+        data.ElementSprite = sprite;
+
+        AssetDatabase.CreateAsset(data, $"Assets/Resources/UiElementData/{name}.asset");
     }
 
     private void CreatePrefab(GameObject go)

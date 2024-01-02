@@ -1,0 +1,25 @@
+#list-entry {
+    height: 100px;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 10px;
+    flex-direction: row;
+}
+
+#list-entry:hover {
+    font-size: 10px;
+}
+
+#element-name {
+    -unity-font-style: bold;
+    font-size: 18px;
+    -unity-text-align: middle-left;
+}
+
+#element-icon {
+    flex-grow: 0;
+    -unity-background-scale-mode: scale-to-fit;
+    margin-right: 10px;
+    width: 55px;
+    height: 55px;
+}

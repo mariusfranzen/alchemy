@@ -7,46 +7,96 @@ public class ElementScript : MonoBehaviour
 {
     public string Name;
     public bool Discovered;
-    public float CircleTransitionSpeed = 15f;
-    public Vector3 CircleTargetSize = new(1.34f, 1.34f, 1.34f);
+    public Animator Animator;
+    public BoxCollider2D Collider;
 
-    private bool backgroundEnabled = false;
     private Transform circle;
+    private new SpriteRenderer renderer;
 
-    void Awake()
-    {
-        
-    }
+    private bool isDragging = false;
+    private bool isHovering = false;
+    private bool hasWaited = false;
 
     void Start()
     {
+        renderer = transform.GetComponent<SpriteRenderer>();
         circle = transform.Find("SelectionCircle(Clone)");
+        Animator = circle.GetComponent<Animator>();
     }
 
     void Update()
     {
-        ScaleCircle();
-    }
-
-    private void ScaleCircle()
-    {
-        if (backgroundEnabled && circle.localScale != CircleTargetSize)
+        if (isDragging)
         {
-            circle.localScale = Vector3.MoveTowards(circle.localScale, CircleTargetSize, Time.deltaTime * CircleTransitionSpeed);
-        }
-        else if (!backgroundEnabled && circle.localScale.x > 0)
-        {
-            circle.localScale = Vector3.MoveTowards(circle.localScale, Vector3.zero, Time.deltaTime * CircleTransitionSpeed);
+            Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
+            transform.Translate(mousePosition);
         }
     }
 
-    private void EnableBackground()
+    void OnMouseDown()
     {
-        backgroundEnabled = true;
+        isDragging = true;
+        renderer.sortingOrder += 1;
     }
 
-    private void DisableBackground()
+    void OnMouseUp()
     {
-        backgroundEnabled = false;
+        isDragging = false;
+        renderer.sortingOrder -= 1;
+    }
+
+    public void Disappear()
+    {
+        Animator.SetTrigger("DisappearTrigger");
+    }
+
+    /// <summary>
+    /// When another element is hovering over this one
+    /// </summary>
+    private void SetHover(bool hover)
+    {
+        isHovering = hover;
+        if (hover)
+        {
+            StartCoroutine(WaitForHoverEffect());
+        } 
+        else
+        {
+            Animator.SetBool("IsHovering", false);
+            Animator.SetTrigger("HoverEnd");
+        }
+    }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (isDragging is false)
+        {
+            SetHover(true);
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D collision)
+    {
+        if (isDragging is false)
+        {
+            SetHover(false);
+        }
+    }
+
+    IEnumerator WaitForHoverEffect()
+    {
+        if (hasWaited is false)
+        {
+            hasWaited = true;
+            yield return new WaitForSeconds(0.8f);
+        }
+
+        hasWaited = false;
+
+        if (isHovering)
+        {
+            Animator.SetBool("IsHovering", true);
+            Animator.SetTrigger("HoverStart");
+        }
     }
 }

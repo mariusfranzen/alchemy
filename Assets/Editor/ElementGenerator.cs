@@ -149,7 +149,9 @@ public class ElementGenerator : EditorWindow
             go.GetComponent<SpriteRenderer>().sortingOrder = 1;
             go.GetComponent<ElementScript>().Name = element.name;
             go.GetComponent<ElementScript>().Discovered = element.discovered;
-            go.AddComponent<BoxCollider2D>();
+            go.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
+            var bc = go.AddComponent<BoxCollider2D>();
+            bc.isTrigger = true;
             Instantiate(goCircle, go.transform);
             CreatePrefab(go);
             DestroyImmediate(go);
@@ -173,6 +175,7 @@ public class ElementGenerator : EditorWindow
         var baseGameObject = new GameObject();
         baseGameObject.AddComponent<SpriteRenderer>();
         baseGameObject.AddComponent<ElementScript>();
+        baseGameObject.AddComponent<Rigidbody2D>();
 
         return baseGameObject;
     }

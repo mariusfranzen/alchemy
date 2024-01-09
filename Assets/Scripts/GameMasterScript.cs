@@ -23,7 +23,25 @@ public class GameMasterScript : MonoBehaviour
     
     void Update()
     {
-        
+
+    }
+
+    public void SpawnElementAtVector3(string name, Vector3 v3)
+    {
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Generated/{name.ToLower()}.prefab");
+        var instantiated = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+        instantiated.transform.position = v3;
+    }
+
+    public GameObject SpawnElementAtMouse(string name)
+    {
+        Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
+
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Prefabs/Generated/{name.ToLower()}.prefab");
+        var instantiated = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+        instantiated.transform.position = mousePosition;
+
+        return instantiated;
     }
 
     public bool CombineElements(ElementScript element1, ElementScript element2)

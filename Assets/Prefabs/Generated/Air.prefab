@@ -118,7 +118,7 @@ GameObject:
   - component: {fileID: 735653062806077408}
   - component: {fileID: 8983618477437295464}
   - component: {fileID: 1412746037911815606}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Air
   m_TagString: Untagged
   m_Icon: {fileID: 0}

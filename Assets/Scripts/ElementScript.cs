@@ -19,7 +19,7 @@ public class ElementScript : MonoBehaviour
     private bool isHovering = false;
     private bool hasWaited = false;
 
-    void Start()
+    void Awake()
     {
         renderer = transform.GetComponent<SpriteRenderer>();
         circle = transform.Find("SelectionCircle(Clone)");

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 733463716445795732}
   - component: {fileID: 6603534711303558744}
   - component: {fileID: 2288328660924336908}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Earth
   m_TagString: Untagged
   m_Icon: {fileID: 0}

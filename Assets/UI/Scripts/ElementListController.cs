@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -42,10 +43,18 @@ public class ElementListController
         ElementList.bindItem = (item, index) =>
         {
             (item.userData as ElementListEntryController).SetElementUiData(UiAllDiscoveredElements[index]);
+            item.RegisterCallback<MouseDownEvent, string>(TestCallback, UiAllDiscoveredElements[index].ElementName);
         };
 
         ElementList.fixedItemHeight = 70;
         ElementList.itemsSource = UiAllDiscoveredElements;
         ElementList.selectionType = SelectionType.None;
+    }
+
+    private void TestCallback(MouseDownEvent evt, string name)
+    {
+        Debug.Log(name);
+        evt.StopPropagation();
+        var item = Game.GetMasterScript().SpawnElementAtMouse(name);
     }
 }

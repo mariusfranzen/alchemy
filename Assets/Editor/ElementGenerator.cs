@@ -144,6 +144,7 @@ public class ElementGenerator : EditorWindow
             var go = GetBaseGameObject();
             var goCircle = GetCirclePrefab();
             go.name = element.name;
+            go.layer = 6;
             go.GetComponent<SpriteRenderer>().sprite = GetElementSprite(element.name);
             go.GetComponent<SpriteRenderer>().sortingLayerName = "Elements";
             go.GetComponent<SpriteRenderer>().sortingOrder = 1;
